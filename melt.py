@@ -2,32 +2,30 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 
-def precip_synthetic(t):
+def synthetic_P(t):
     return 8e-3
 
-def temperature_synthetic(t):
+def synthetic_T(t):
     return -10*np.cos(2*np.pi/364 * t) - 8*np.cos(2*np.pi* t) + 5
 
 
-
-def glacier_melt(temperature, melt_factor):
+def melt(temperature, melt_factor):
 
     if temperature >= 0:
         return temperature * melt_factor
     else:
         return 0.0
 
-def  glacier_accumulation(temperature, t_threshold, precip):
+def accumulate(temperature, T_threshold, P):
     
-    if temperature <= t_threshold:
-        return precip
+    if temperature <= T_threshold:
+        return P
     else:
         return 0.0
     
-def lapsed_temperature(temperature_s, elevation, lapse_rate):
+def lapse(T, dz, lapse_rate):
     
-    delta_h = elevation - elevation_s
-    return lapse_rate * delta_h + temperature_s
+    return lapse_rate * dz + T
 
 def net_balance_fn(dt, Ts, Ps, melt_factor, T_threshold):
     """
@@ -79,36 +77,48 @@ def glacier_net_balance_fn(zs, dt, Ts, Ps, melt_factor, T_threshold, lapse_rate)
     return glacier_net_balance / len(zs), net_balance
 
 
-# Example usage
-temperature_s = 5    # °C, temperature at weather station
-elevation_s = 2000   # m, elevation of the weather station
+# Constants
+
 melt_factor = 0.005  # m/d/°C
-precip = 0.5         # m
-lapse_rate = -0.009  # °C/m
+lapse_rate = -0.6/100
+melt_factor = 0.005
+T_threshold = 4
+dt = 1 / 24
+t = np.arange(0, 365 + dt, dt)
+
+
+# Example
+
+T = 5    # °C, temperature at weather station
+P = 0.5         # m
+elevation_s = 2000   # m, elevation of the weather station
+dz = 500
 elevation = 2500     # example elevation
-t_threshold = 0      # °C, temperature threshold
-temperature = lapsed_temperature(temperature_s, elevation, lapse_rate)
-melt = glacier_melt(temperature, melt_factor)
-accumulation = glacier_accumulation(temperature, t_threshold, precip)
+
+
+T = lapse(T, dz, lapse_rate)
+melt = melt(T, melt_factor)
+accumulation = accumulate(T, T_threshold, P)
 print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
+
 
 # Test cases
 def test_lapsed_temperature():
-    assert lapsed_temperature(5, 2500, -0.009) == 0.5
-    assert lapsed_temperature(10, 1000, -0.006) == 4.0
+    assert lapse(5, 2500, -0.009) == 0.5
+    assert lapse(10, 1000, -0.006) == 4.0
 
 def test_glacier_melt():
-    assert glacier_melt(5, 0.005) == 0.025
-    assert glacier_melt(-5, 0.005) == 0.0
+    assert melt(5, 0.005) == 0.025
+    assert melt(-5, 0.005) == 0.0
 
 def test_glacier_accumulation():
-    assert glacier_accumulation(-5, 0, 0.5) == 0.5
-    assert glacier_accumulation(4, 4, 10) == 10
-    assert glacier_accumulation(0, 0, 0.5) == 0.5
+    assert accumulate(-5, 0, 0.5) == 0.5
+    assert accumulate(4, 4, 10) == 10
+    assert accumulate(0, 0, 0.5) == 0.5
 
 # Run tests
 # test_lapsed_temperature()
-test_glacier_melt()
-test_glacier_accumulation()
+# test_glacier_melt()
+# test_glacier_accumulation()
 
 print("All tests passed.")
