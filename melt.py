@@ -1,3 +1,15 @@
+import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+
+def precip_synthetic(t):
+    return 8e-3
+
+def temperature_synthetic(t):
+    return -10*np.cos(2*np.pi/364 * t) - 8*np.cos(2*np.pi* t) + 5
+
+
+
 def glacier_melt(temperature, melt_factor):
 
     if temperature >= 0:
@@ -48,6 +60,6 @@ def test_glacier_accumulation():
 # Run tests
 # test_lapsed_temperature()
 test_glacier_melt()
-# test_glacier_accumulation()
+test_glacier_accumulation()
 
 print("All tests passed.")
