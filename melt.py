@@ -3,22 +3,22 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def synthetic_P(t):
-    return 8e-3
+    return np.full_like(t, 8e-3)
 
 def synthetic_T(t):
     return -10*np.cos(2*np.pi/364 * t) - 8*np.cos(2*np.pi* t) + 5
 
 
-def melt(temperature, melt_factor):
+def melt(T, melt_factor):
 
-    if temperature >= 0:
-        return temperature * melt_factor
+    if T >= 0:
+        return T * melt_factor
     else:
         return 0.0
 
-def accumulate(temperature, T_threshold, P):
+def accumulate(T, P, T_threshold):
     
-    if temperature <= T_threshold:
+    if T <= T_threshold:
         return P
     else:
         return 0.0
@@ -89,17 +89,28 @@ t = np.arange(0, 365 + dt, dt)
 
 # Example
 
-T = 5    # °C, temperature at weather station
-P = 0.5         # m
-elevation_s = 2000   # m, elevation of the weather station
-dz = 500
-elevation = 2500     # example elevation
+# T = 5    # °C, temperature at weather station
+# P = 0.5         # m
+# elevation_s = 2000   # m, elevation of the weather station
+# dz = 500
+# elevation = 2500     # example elevation
 
 
-T = lapse(T, dz, lapse_rate)
-melt = melt(T, melt_factor)
-accumulation = accumulate(T, T_threshold, P)
-print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
+
+Ts = synthetic_T(t)
+Ps = synthetic_P(t)
+ele = 1500
+ele_s = 0
+dz = ele - ele_s
+
+print(net_balance_fn(dt, Ts, Ps, melt_factor, T_threshold))
+
+
+
+# T = lapse(T, dz, lapse_rate)
+# melt = melt(T, melt_factor)
+# accumulation = accumulate(T, T_threshold, P)
+# print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
 
 
 # Test cases
@@ -121,4 +132,4 @@ def test_glacier_accumulation():
 # test_glacier_melt()
 # test_glacier_accumulation()
 
-print("All tests passed.")
+# print("All tests passed.")
