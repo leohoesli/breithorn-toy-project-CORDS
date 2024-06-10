@@ -25,8 +25,29 @@ melt_factor = 0.005  # m/d/°C
 precip = 0.5         # m
 lapse_rate = -0.009  # °C/m
 elevation = 2500     # example elevation
+t_threshold = 0      # °C, temperature threshold
 temperature = lapsed_temperature(temperature_s, elevation, lapse_rate)
 melt = glacier_melt(temperature, melt_factor)
-accumulation = glacier_accumulation(temperature, 0, precip)
+accumulation = glacier_accumulation(temperature, t_threshold, precip)
 print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
 
+# Test cases
+def test_lapsed_temperature():
+    assert lapsed_temperature(5, 2500, -0.009) == 0.5
+    assert lapsed_temperature(10, 1000, -0.006) == 4.0
+
+def test_glacier_melt():
+    assert glacier_melt(5, 0.005) == 0.025
+    assert glacier_melt(-5, 0.005) == 0.0
+
+def test_glacier_accumulation():
+    assert glacier_accumulation(-5, 0, 0.5) == 0.5
+    assert glacier_accumulation(4, 4, 10) == 10
+    assert glacier_accumulation(0, 0, 0.5) == 0.5
+
+# Run tests
+# test_lapsed_temperature()
+test_glacier_melt()
+# test_glacier_accumulation()
+
+print("All tests passed.")
