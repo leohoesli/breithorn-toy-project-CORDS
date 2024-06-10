@@ -87,57 +87,6 @@ dt = 1 / 24
 t = np.arange(0, 365 + dt, dt)
 
 
-Ts = synthetic_T(t)
-Ps = synthetic_P(t)
-ele = 1500
-ele_s = 0
-
-# Glacier horizontal extent and elevation
-x = np.arange(0, 5000 + 500, 500)
-zs = x / 5 + 1400
-
-# Calculate net balance at the specific elevation point (1500m)
-dz = ele - ele_s  # assuming weather station elevation is 0
-Ts_at_elevation = [lapse(T, dz, lapse_rate) for T in Ts]
-net_balance_at_elevation = net_balance_fn(dt, Ts_at_elevation, Ps, melt_factor, T_threshold)
-
-# Calculate glacier net balance
-glacier_net_balance, net_balance_at_points = glacier_net_balance_fn(zs, dt, Ts, Ps, melt_factor, T_threshold, lapse_rate)
-
-
-print("Net balance at 1500m:", net_balance_at_elevation)
-print("Glacier net balance:", glacier_net_balance)
-
-
-# Plot synthetic temperature time series
-plt.figure(figsize=(20, 6))
-plt.plot(t, Ts, label='Synthetic Temperature')
-plt.xlabel('Time (days)')
-plt.ylabel('Temperature (°C)')
-plt.title('Synthetic Temperature Time Series')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-# Plot net balance at different points
-plt.figure(figsize=(10, 6))
-plt.plot(zs, net_balance_at_points, label='Net Balance at Points')
-plt.xlabel('Elevation (m)')
-plt.ylabel('Net Balance (m)')
-plt.title('Net Balance at Different Elevations')
-plt.legend()
-plt.grid(True)
-plt.show()
-
-# Run glacier-wide model for temperature offsets
-temperature_offsets = np.arange(-4, 5, 1)
-out = []
-
-for offset in temperature_offsets:
-    Ts_offset = Ts + offset
-    glacier_net_balance_offset, _ = glacier_net_balance_fn(zs, dt, Ts_offset, Ps, melt_factor, T_threshold, lapse_rate)
-    out.append(glacier_net_balance_offset)
-
 
 
 # Test cases
