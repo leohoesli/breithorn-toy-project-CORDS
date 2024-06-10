@@ -87,30 +87,69 @@ dt = 1 / 24
 t = np.arange(0, 365 + dt, dt)
 
 
-# Example
-
-# T = 5    # °C, temperature at weather station
-# P = 0.5         # m
-# elevation_s = 2000   # m, elevation of the weather station
-# dz = 500
-# elevation = 2500     # example elevation
-
-
-
 Ts = synthetic_T(t)
 Ps = synthetic_P(t)
 ele = 1500
 ele_s = 0
-dz = ele - ele_s
 
-print(net_balance_fn(dt, Ts, Ps, melt_factor, T_threshold))
+# Glacier horizontal extent and elevation
+x = np.arange(0, 5000 + 500, 500)
+zs = x / 5 + 1400
+
+# Calculate net balance at the specific elevation point (1500m)
+dz = ele - ele_s  # assuming weather station elevation is 0
+Ts_at_elevation = [lapse(T, dz, lapse_rate) for T in Ts]
+net_balance_at_elevation = net_balance_fn(dt, Ts_at_elevation, Ps, melt_factor, T_threshold)
+
+# Calculate glacier net balance
+glacier_net_balance, net_balance_at_points = glacier_net_balance_fn(zs, dt, Ts, Ps, melt_factor, T_threshold, lapse_rate)
 
 
+print("Net balance at 1500m:", net_balance_at_elevation)
+print("Glacier net balance:", glacier_net_balance)
 
-# T = lapse(T, dz, lapse_rate)
-# melt = melt(T, melt_factor)
-# accumulation = accumulate(T, T_threshold, P)
-# print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
+
+# Plot synthetic temperature time series
+plt.figure(figsize=(20, 6))
+plt.plot(t, Ts, label='Synthetic Temperature')
+plt.xlabel('Time (days)')
+plt.ylabel('Temperature (°C)')
+plt.title('Synthetic Temperature Time Series')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Plot net balance at different points
+plt.figure(figsize=(10, 6))
+plt.plot(zs, net_balance_at_points, label='Net Balance at Points')
+plt.xlabel('Elevation (m)')
+plt.ylabel('Net Balance (m)')
+plt.title('Net Balance at Different Elevations')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Run glacier-wide model for temperature offsets
+temperature_offsets = np.arange(-4, 5, 1)
+out = []
+
+for offset in temperature_offsets:
+    Ts_offset = Ts + offset
+    glacier_net_balance_offset, _ = glacier_net_balance_fn(zs, dt, Ts_offset, Ps, melt_factor, T_threshold, lapse_rate)
+    out.append(glacier_net_balance_offset)
+
+# Store the total balance in variable `out`
+print("Total balances for temperature offsets:", out)
+
+# Plot glacier net balance for different temperature offsets
+plt.figure(figsize=(10, 6))
+plt.plot(temperature_offsets, out, label='Glacier Net Balance')
+plt.xlabel('Temperature Offset (°C)')
+plt.ylabel('Glacier Net Balance (m)')
+plt.title('Glacier Net Balance for Different Temperature Offsets')
+plt.legend()
+plt.grid(True)
+plt.show()
 
 
 # Test cases
