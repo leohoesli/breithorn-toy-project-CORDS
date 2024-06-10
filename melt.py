@@ -12,18 +12,20 @@ def  glacier_accumulation(temperature, t_threshold, precip):
     else:
         return 0.0
     
-def lapsed_temperature(temperature_s, delta_h, lapse_rate):
+def lapsed_temperature(temperature_s, elevation, lapse_rate):
     
+    delta_h = elevation - elevation_s
     return lapse_rate * delta_h + temperature_s
 
 
 # Example usage
-temperature_s = 2.5  # °C
-melt_factor = 0.5    # m/d/°C
+temperature_s = 5    # °C, temperature at weather station
+elevation_s = 2000   # m, elevation of the weather station
+melt_factor = 0.005  # m/d/°C
 precip = 0.5         # m
 lapse_rate = -0.009  # °C/m
-delta_h = 200
-temperature = lapsed_temperature(temperature_s, delta_h, lapse_rate)
+elevation = 2500     # example elevation
+temperature = lapsed_temperature(temperature_s, elevation, lapse_rate)
 melt = glacier_melt(temperature, melt_factor)
 accumulation = glacier_accumulation(temperature, 0, precip)
 print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
