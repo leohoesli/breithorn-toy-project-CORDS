@@ -18,13 +18,13 @@ def lapsed_temperature(temperature_s, delta_h, lapse_rate):
 
 
 # Example usage
-temperature_s = 2.5  # Example temperature in degrees Celsius
-melt_factor = 0.5  # Example melt factor (unit of melt per degree Celsius)
-precip = 0.5
+temperature_s = 2.5  # °C
+melt_factor = 0.5    # m/d/°C
+precip = 0.5         # m
 lapse_rate = -0.009  # °C/m
 delta_h = 200
 temperature = lapsed_temperature(temperature_s, delta_h, lapse_rate)
 melt = glacier_melt(temperature, melt_factor)
 accumulation = glacier_accumulation(temperature, 0, precip)
-print(f"Glacier melt: {melt} units, Glacier accumulation: {accumulation}")
+print(f"Glacier melt: {melt} m/d, Glacier accumulation: {accumulation}")
 
