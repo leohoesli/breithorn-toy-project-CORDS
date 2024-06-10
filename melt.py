@@ -138,18 +138,6 @@ for offset in temperature_offsets:
     glacier_net_balance_offset, _ = glacier_net_balance_fn(zs, dt, Ts_offset, Ps, melt_factor, T_threshold, lapse_rate)
     out.append(glacier_net_balance_offset)
 
-# Store the total balance in variable `out`
-print("Total balances for temperature offsets:", out)
-
-# Plot glacier net balance for different temperature offsets
-plt.figure(figsize=(10, 6))
-plt.plot(temperature_offsets, out, label='Glacier Net Balance')
-plt.xlabel('Temperature Offset (°C)')
-plt.ylabel('Glacier Net Balance (m)')
-plt.title('Glacier Net Balance for Different Temperature Offsets')
-plt.legend()
-plt.grid(True)
-plt.show()
 
 
 # Test cases
