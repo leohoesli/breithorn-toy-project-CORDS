@@ -16,7 +16,6 @@ def lapsed_temperature(temperature_s, delta_h, lapse_rate):
     
     return lapse_rate * delta_h + temperature_s
 
-#change
 
 # Example usage
 temperature_s = 2.5  # Example temperature in degrees Celsius
