@@ -43,10 +43,6 @@ def download_file(url, destination_file):
                     f.write(chunk)
         print("done.")
 
-# Example usage
-if __name__ == "__main__":
-    download_file('https://example.com/datafile.csv', 'data/datafile.csv')
-
 
 def unzip_one_file(zipfile_path, filename, destination_file):
     """
