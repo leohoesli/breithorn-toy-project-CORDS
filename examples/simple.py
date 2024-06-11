@@ -6,47 +6,103 @@ from git import Repo
 
 
 def make_sha_filename(basename, ext, directory):
-    # Open the git repository in the current directory
+    """
+    Generate a filename based on the Git commit SHA and current date/time.
+
+    Args:
+        basename (str): Base name for the file.
+        ext (str): File extension.
+        directory (str): Directory to save the file.
+
+    Returns:
+        str: Full path of the file with the base name, Git commit SHA, date/time, and extension.
+    """
     repo = Repo(".")
 
-    # Get the object ID of the HEAD commit
     head_commit_id = repo.head.commit.hexsha
-    # Take the first 10 characters of the hexadecimal string
     short_hash = head_commit_id[:10]
 
-    # Check if there are uncommitted changes
     if repo.is_dirty():
         postfix = short_hash + "-dirty"
     else:
         postfix = short_hash
 
-    # Combine directory, base name, postfix, and extension
     return os.path.join(directory, f"{basename}-{postfix}{ext}")
 
 
 def synthetic_P(t):
+    """
+    Generate synthetic precipitation data.
+
+    Args:
+        t (array-like): Time array.
+
+    Returns:
+        ndarray: Array of synthetic precipitation values.
+    """
     return np.full_like(t, 8e-3)
 
+
 def synthetic_T(t):
+    """
+    Generate synthetic temperature data.
+
+    Args:
+        t (array-like): Time array.
+
+    Returns:
+        ndarray: Array of synthetic temperature values.
+    """
     return -10*np.cos(2*np.pi/364 * t) - 8*np.cos(2*np.pi* t) + 5
 
 
 def melt(T, melt_factor):
+    """
+    Calculate the melt amount based on temperature.
 
+    Args:
+        T (float): Temperature value.
+        melt_factor (float): Factor to compute melt amount.
+
+    Returns:
+        float: Melt amount.
+    """
     if T >= 0:
         return T * melt_factor
     else:
         return 0.0
 
+
 def accumulate(T, P, T_threshold):
-    
+    """
+    Calculate the accumulation amount based on temperature and precipitation.
+
+    Args:
+        T (float): Temperature value.
+        P (float): Precipitation value.
+        T_threshold (float): Temperature threshold for accumulation.
+
+    Returns:
+        float: Accumulation amount.
+    """
     if T <= T_threshold:
         return P
     else:
         return 0.0
-    
+
+
 def lapse(T, dz, lapse_rate):
-    
+    """
+    Adjust temperature based on elevation change using the lapse rate.
+
+    Args:
+        T (float): Temperature value.
+        dz (float): Elevation change.
+        lapse_rate (float): Lapse rate (temperature change per unit elevation change).
+
+    Returns:
+        float: Adjusted temperature.
+    """
     return lapse_rate * dz + T
 
 def net_balance_fn(dt, Ts, Ps, melt_factor, T_threshold):
