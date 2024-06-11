@@ -1,6 +1,28 @@
+import os
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+from git import Repo
+
+
+def make_sha_filename(basename, ext, directory):
+    # Open the git repository in the current directory
+    repo = Repo(".")
+
+    # Get the object ID of the HEAD commit
+    head_commit_id = repo.head.commit.hexsha
+    # Take the first 10 characters of the hexadecimal string
+    short_hash = head_commit_id[:10]
+
+    # Check if there are uncommitted changes
+    if repo.is_dirty():
+        postfix = short_hash + "-dirty"
+    else:
+        postfix = short_hash
+
+    # Combine directory, base name, postfix, and extension
+    return os.path.join(directory, f"{basename}-{postfix}{ext}")
+
 
 def synthetic_P(t):
     return np.full_like(t, 8e-3)
@@ -108,6 +130,8 @@ glacier_net_balance, net_balance_at_points = glacier_net_balance_fn(zs, dt, Ts, 
 print("Net balance at 1500m:", net_balance_at_elevation)
 print("Glacier net balance:", glacier_net_balance)
 
+# Define the output directory
+output_directory = r"C:\Users\leoho\OneDrive\Documents\1_Ausbildung\VAW\9_Varia\CORDS\output\temperature_series"
 
 # Plot synthetic temperature time series
 plt.figure(figsize=(20, 6))
@@ -117,6 +141,10 @@ plt.ylabel('Temperature (°C)')
 plt.title('Synthetic Temperature Time Series')
 plt.legend()
 plt.grid(True)
+
+# Save the plot using the Git hash filename
+temperature_plot_filename = make_sha_filename("temperature_plot", ".png", output_directory)
+plt.savefig(temperature_plot_filename)
 plt.show()
 
 # Plot net balance at different points
